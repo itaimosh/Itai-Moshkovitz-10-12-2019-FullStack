@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29509.3
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeatherApp.WebAPI", "WeatherApp.WebAPI\WeatherApp.WebAPI.csproj", "{4736F70D-E80C-4288-8B2C-7A4E66CFBDDA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeatherApp.Web", "WeatherApp.Web\WeatherApp.Web.csproj", "{0DD417CC-B806-4EFD-9338-500E660CD754}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DBscript", "DBscript", "{81BB6858-C504-40E3-8436-331243198E8F}"
+	ProjectSection(SolutionItems) = preProject
+		DBscript\TablesScript.sql = DBscript\TablesScript.sql
+		DBscript\WholeDBscript.sql = DBscript\WholeDBscript.sql
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4736F70D-E80C-4288-8B2C-7A4E66CFBDDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4736F70D-E80C-4288-8B2C-7A4E66CFBDDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4736F70D-E80C-4288-8B2C-7A4E66CFBDDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4736F70D-E80C-4288-8B2C-7A4E66CFBDDA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0DD417CC-B806-4EFD-9338-500E660CD754}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DD417CC-B806-4EFD-9338-500E660CD754}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DD417CC-B806-4EFD-9338-500E660CD754}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DD417CC-B806-4EFD-9338-500E660CD754}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {15A29CD9-A1A9-4DE7-8564-D829324A896E}
+	EndGlobalSection
+EndGlobal
