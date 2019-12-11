@@ -22,7 +22,7 @@ namespace WeatherApp.Controllers
 
         // GET: api/Favorites
         [HttpGet]
-        public IEnumerable<Favorites> GetFavorites()
+        public IEnumerable<City> GetFavorites()
         {
             return _context.Favorites;
         }
@@ -31,7 +31,7 @@ namespace WeatherApp.Controllers
 
         // POST: api/Favorites
         [HttpPost]
-        public async Task<IActionResult> PostFavorites([FromBody] Favorites favorites)
+        public async Task<IActionResult> PostFavorites([FromBody] City favorites)
         {
             if (!ModelState.IsValid)
             {

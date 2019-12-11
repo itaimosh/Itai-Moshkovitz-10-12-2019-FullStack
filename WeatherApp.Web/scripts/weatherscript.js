@@ -1,11 +1,6 @@
-﻿const AUTOCOMPLETEURL = "http://dataservice.accuweather.com/locations/v1/cities/autocomplete";
-const CURRENTCONDITIONSURL = "http://dataservice.accuweather.com/currentconditions/v1/";
-const WEATHERICONURL = "https://developer.accuweather.com/sites/default/files/";
-const CityAPI = "http://localhost:62667/api/CityWeather";
-const FavoritesAPI = "http://localhost:62667/api/Favorites";
-
-const apiKey = "Yia4PeS1jZ7iDxBbYOdyjGDVkg3CkKxe";//"7Z1iGQ72Gw3tFG1VFYm63V2mCcUefyGY";//"tBsEy9K6YR76FGXXDij2CBLJ7wkCcRTS"//"wAcetFS9ROeeylpbSr6swr1GuphJsQGr";//"FXjhrV0Pe4QAzRUdLXpZ3LMRcWzAkF8K";//"";//MKxfhxfNxlPUTpElIKeCoYLMbJOTmyQO";
-
+﻿const WEATHERICONURL = "https://developer.accuweather.com/sites/default/files/";
+const WeatherAPI = "http://localhost:62667/api/weather/";
+const FavoritesAPI = "http://localhost:62667/api/favorites/";
 
 
 //Handle click on cities list 
@@ -13,63 +8,27 @@ function resultshandler(li) {
 
     let cityKey = li[0].id;
     let cityName = li[0].innerText;
-    let cAPIURL = CityAPI + "/" + cityKey;
-
+    let url = `${WeatherAPI}GetCurrentWeather/${cityKey}`
     
 
     //Try to load city data from SQL DB. if Not found -> then load it from Accu Wather API
-    axios.get(cAPIURL)
+    axios.get(url)
         .then(function (response) {
 
             let resData = response.data;
             ShowSelectedWeather(cityKey, cityName, resData.weatherText, resData.temperature, resData.icon);
         })
         .catch(function (err) {
-
-            let cURL = CURRENTCONDITIONSURL + cityKey + "?apikey=" + apiKey
-            //Load data from Accu Wather API and save it to DB for future use.
-            axios.get(cURL)
-                .then(function (response) {
-                    let resData = response.data["0"];
-                    saveCityData(cityKey, resData.WeatherText, resData.Temperature.Metric.Value, resData.WeatherIcon);
-                    ShowSelectedWeather(cityKey, cityName, resData.WeatherText, resData.Temperature.Metric.Value, resData.WeatherIcon);
-                            
-
-                })
-                .catch(function (err) {
-                    console.log(err)
-                });
-        }).finally(function () { hideLoader() });
+            console.log(err)
+        }).finally(function () {  });
         
-  
 }
 
-//Save city weather to DB for future use 
-function saveCityData(cityKey, weatherText, temperature, icon) {
-    
-    const data = {
-        Key: cityKey,
-        WeatherText: weatherText,
-        Temperature: temperature,
-        Icon: icon
-    }
-
-    
-    axios.post(CityAPI, data)
-        .then(function (response) {           
-            toastr.info('City weather saved');
-        })
-        .catch(function (err) {
-            console.log(err);
-        });
-}
 
 //Show weather of selected city on panel
 function ShowSelectedWeather(cityKey, localizedName, weatherText, temperature, weatherIcon) {
 
     let selectedCityArray = new Array();
-   
-    
 
     selectedCityArray.push({ "key": cityKey, "localizedName": localizedName, "temperature": temperature, "weatherText": weatherText, "iconSrc": getIconSrc(weatherIcon) });
     let markup = createMarkup(selectedCityArray, isFavorites());
@@ -85,15 +44,6 @@ function getIconSrc(iconId) {
 }
 
 
-//Show loader on screen for long operations
-function showLoader() {
-    document.getElementById("loader").style.display = "block";
-}
-
-//hide loader
-function hideLoader() {
-    document.getElementById("loader").style.display = "none";
-}
 
 function isFavorites() {
     var path = window.location.pathname;
@@ -106,20 +56,18 @@ function isFavorites() {
 
 //Search for city on AccuWeather API. I want sure from the instructions if I should implemnt it as autocompleate or by click event of the search button.
 function search() {
-    let searchVal = document.getElementById("txtSearch").value;
+    let query = document.getElementById("txtSearch").value;
     
-        
-    let cURL = AUTOCOMPLETEURL + "?apikey=" + apiKey + "&q=" + searchVal
-    
-    axios.get(cURL)
+    let url = `${WeatherAPI}/search/${query}`;
+    axios.get(url)
         .then(function (response) {
             var list = document.getElementById("lstCities");
             list.innerHTML = "";
             for (const item of response.data) {
                 var li = document.createElement('li');
-                li.id = item.Key;
+                li.id = item.key;
                 li.setAttribute("class", "list-group-item");               
-                li.appendChild(document.createTextNode(item.LocalizedName));
+                li.appendChild(document.createTextNode(item.localizedName));
                 list.appendChild(li);
             }
 
@@ -181,7 +129,7 @@ function loadFavorites() {
     //load all favorites
     const promise1 = axios.get(FavoritesAPI);
     //load cities data
-    const promise2 = axios.get(CityAPI);
+    const promise2 = axios.get(WeatherAPI);
     let promises = [];
 
     Promise.all([promise1, promise2]).then(function (values) {
@@ -192,47 +140,36 @@ function loadFavorites() {
         favorites.forEach(function (favorite) {
             //Try to find city weather for every favorite city
             let city = cities.find(o => o.key == favorite.key);
-            if (city) {
-                favoritesArray.push({ "key": city.key, "localizedName": favorite.localizedName, "temperature": city.temperature, "weatherText": city.weatherText, "iconSrc": getIconSrc(city.icon) });
+           
+            favoritesArray.push({ "key": city.key, "localizedName": favorite.localizedName, "temperature": city.temperature, "weatherText": city.weatherText, "iconSrc": getIconSrc(city.icon) });
+           
+        });
+        
+
+        var list = document.getElementById("lstCities");
+        list.innerHTML = "";
+
+        favoritesArray.forEach(function (item) {
+
+            var li = document.createElement('li');
+            li.id = item.key;
+            if (item.key == urlKey) {
+                li.setAttribute("class", "list-group-item active");
             }
             else {
-               //data want find for favorite city in City Weather table -> load data from AccuWeather API 
-                let cURL = CURRENTCONDITIONSURL + favorite.key + "?apikey=" + apiKey
-
-                promises.push(axios.get(cURL)
-                    .then(function (response) {
-                        let resData = response.data["0"];
-                        favoritesArray.push({ "key": favorite.key, "localizedName": favorite.localizedName, "temperature": resData.Temperature.Metric.Value, "weatherText": resData.WeatherText, "iconSrc": getIconSrc(resData.WeatherIcon) });
-                    }))
+                li.setAttribute("class", "list-group-item");
             }
+            li.appendChild(document.createTextNode(item.localizedName));
+            list.appendChild(li);
+
         });
-        axios.all(promises).then(function (results) {
-
-            var list = document.getElementById("lstCities");
-            list.innerHTML = "";
-
-            favoritesArray.forEach(function (item) {
-
-                var li = document.createElement('li');
-                li.id = item.key;
-                if (item.key == urlKey) {
-                    li.setAttribute("class", "list-group-item active");
-                }
-                else {
-                    li.setAttribute("class", "list-group-item");
-                }
-                li.appendChild(document.createTextNode(item.localizedName));
-                list.appendChild(li);
-
-            });
             
-            $('ul#lstCities li').click(function () {              
-                resultshandler($(this));
-            });
-
-            $('ul#lstCities').find('li.active').click();
-            
+        $('ul#lstCities li').click(function () {              
+            resultshandler($(this));
         });
+
+        $('ul#lstCities').find('li.active').click();
+        
     });
 
    

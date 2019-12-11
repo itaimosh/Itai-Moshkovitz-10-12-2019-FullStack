@@ -14,8 +14,8 @@ namespace WeatherApp.Models
         {
         }
 
-        public DbSet<WeatherApp.Models.CityWeather> CityWeather { get; set; }
+        public DbSet<WeatherApp.Models.Weather> CityWeather { get; set; }
 
-        public DbSet<WeatherApp.Models.Favorites> Favorites { get; set; }
+        public DbSet<WeatherApp.Models.City> Favorites { get; set; }
     }
 }
